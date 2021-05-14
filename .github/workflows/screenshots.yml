@@ -1,0 +1,45 @@
+name: Take Screenshots
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Take Screenshots
+    runs-on: ubuntu-latest
+    steps:
+      
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+
+      # Cache
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library
+
+      ## Test
+      #- name: Run tests
+      #  uses: game-ci/unity-test-runner@v2
+      #  env:
+      #    UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      #  with:
+      #    githubToken: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Take Screenshots
+        uses: jmschrack/unity-builder@5e76137f06c0ac76f52cfb8e9e9807be462a7204
+
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          targetPlatform: StandaloneWindows64
+          chownFilesTo: "1000:1000"
+          buildMethod: ScreenshotPipeline.TakeScreenshots
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Screenshots
+          path: Screenshots
